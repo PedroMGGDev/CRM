@@ -23,9 +23,7 @@ export default function Messages() {
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-bold text-gray-900">
-          Mensagens e Automações
-        </h1>
+        <h1 className="text-2xl font-bold text-gray-900">Mensagens e Automações</h1>
         <div className="space-x-3">
           <button
             onClick={() => setShowTemplateForm(true)}
@@ -45,31 +43,20 @@ export default function Messages() {
       </div>
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+        {/* Templates */}
         <div>
-          <h2 className="text-lg font-medium text-gray-900 mb-4">
-            Templates de Mensagem
-          </h2>
+          <h2 className="text-lg font-medium text-gray-900 mb-4">Templates de Mensagem</h2>
           <div className="space-y-4">
             {templates.map((template) => (
-              <div
-                key={template.id}
-                className="bg-white shadow rounded-lg p-4 border border-gray-200"
-              >
+              <div key={template.id} className="bg-white shadow rounded-lg p-4 border border-gray-200">
                 <div className="flex justify-between items-start">
-                  <h3 className="text-md font-medium text-gray-900">
-                    {template.name}
-                  </h3>
-                  <button className="text-gray-400 hover:text-gray-500">
-                    <span className="sr-only">Editar</span>
-                    {/* Ícone de edição */}
-                  </button>
+                  <h3 className="text-md font-medium text-gray-900">{template.name}</h3>
+                  <button className="text-gray-400 hover:text-gray-500">Editar</button>
                 </div>
                 <p className="mt-2 text-sm text-gray-600">{template.content}</p>
-                {template.mediaAttachments && template.mediaAttachments.length > 0 && (
+                {template.mediaAttachments?.length > 0 && (
                   <div className="mt-2">
-                    <span className="text-xs font-medium text-gray-500">
-                      Anexos: {template.mediaAttachments.length}
-                    </span>
+                    <span className="text-xs font-medium text-gray-500">Anexos: {template.mediaAttachments.length}</span>
                   </div>
                 )}
               </div>
@@ -77,47 +64,22 @@ export default function Messages() {
           </div>
         </div>
 
+        {/* Automação */}
         <div>
-          <h2 className="text-lg font-medium text-gray-900 mb-4">
-            Regras de Automação
-          </h2>
+          <h2 className="text-lg font-medium text-gray-900 mb-4">Regras de Automação</h2>
           <div className="space-y-4">
             {automationRules.map((rule) => (
-              <div
-                key={rule.id}
-                className="bg-white shadow rounded-lg p-4 border border-gray-200"
-              >
+              <div key={rule.id} className="bg-white shadow rounded-lg p-4 border border-gray-200">
                 <div className="flex justify-between items-start">
-                  <h3 className="text-md font-medium text-gray-900">
-                    {rule.name}
-                  </h3>
-                  <div className="flex space-x-2">
-                    <button className="text-gray-400 hover:text-gray-500">
-                      <span className="sr-only">Editar</span>
-                      {/* Ícone de edição */}
-                    </button>
-                  </div>
+                  <h3 className="text-md font-medium text-gray-900">{rule.name}</h3>
                 </div>
-                <div className="mt-2 space-y-2">
+                <div className="mt-2">
                   <div className="flex items-center text-sm text-gray-500">
                     {rule.trigger.type === 'tag' && <Tags className="h-4 w-4 mr-2" />}
                     {rule.trigger.type === 'schedule' && <Clock className="h-4 w-4 mr-2" />}
                     {rule.trigger.type === 'kanban_stage' && <Calendar className="h-4 w-4 mr-2" />}
-                    <span>
-                      Gatilho: {rule.trigger.type === 'tag' ? 'Tag' : 
-                               rule.trigger.type === 'schedule' ? 'Agendamento' : 
-                               'Estágio Kanban'}
-                    </span>
+                    <span>Gatilho: {rule.trigger.type}</span>
                   </div>
-                  <div className="text-sm text-gray-500">
-                    Valor: {rule.trigger.value}
-                  </div>
-                  {rule.schedule && (
-                    <div className="text-sm text-gray-500">
-                      Frequência: {rule.schedule.frequency}
-                      {rule.schedule.time && ` às ${rule.schedule.time}`}
-                    </div>
-                  )}
                 </div>
               </div>
             ))}
@@ -125,24 +87,13 @@ export default function Messages() {
         </div>
       </div>
 
+      {/* Formulários de criação */}
       {showTemplateForm && (
-        <MessageTemplateForm
-          onClose={() => setShowTemplateForm(false)}
-          onSuccess={() => {
-            setShowTemplateForm(false);
-            // Recarregar dados
-          }}
-        />
+        <MessageTemplateForm onClose={() => setShowTemplateForm(false)} onSuccess={() => setShowTemplateForm(false)} />
       )}
 
       {showAutomationForm && (
-        <AutomationRuleForm
-          onClose={() => setShowAutomationForm(false)}
-          onSuccess={() => {
-            setShowAutomationForm(false);
-            // Recarregar dados
-          }}
-        />
+        <AutomationRuleForm onClose={() => setShowAutomationForm(false)} onSuccess={() => setShowAutomationForm(false)} />
       )}
     </div>
   );
