@@ -4,7 +4,8 @@ import { useStore } from './store/useStore';
 import Layout from './components/Layout';
 import LoginForm from './components/auth/LoginForm';
 import Dashboard from './pages/Dashboard';
-import Contacts from './pages/Contacts';
+// Removendo a importação de "Contacts" já que não é necessária no momento
+// import Contacts from './pages/Contacts';
 import Companies from './pages/Companies';
 import Kanban from './pages/Kanban';
 import Messages from './pages/Messages';
@@ -29,7 +30,8 @@ function App() {
           }
         >
           <Route index element={<Dashboard />} />
-          <Route path="contacts" element={<Contacts />} />
+          {/* Removendo a rota de "contacts", já que o arquivo não existe e não é necessário */}
+          {/* <Route path="contacts" element={<Contacts />} /> */}
           <Route path="companies" element={<Companies />} />
           <Route path="kanban" element={<Kanban />} />
           <Route path="messages" element={<Messages />} />
