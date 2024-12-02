@@ -1,25 +1,14 @@
 import React from 'react';
 import { useQuery } from '@tanstack/react-query';
-import {
-  DndContext,
-  DragOverlay,
-  closestCorners,
-  KeyboardSensor,
-  PointerSensor,
-  useSensor,
-  useSensors,
-} from '@dnd-kit/core';
-import {
-  SortableContext,
-  arrayMove,
-  sortableKeyboardCoordinates,
-} from '@dnd-kit/sortable';
+import { DndContext, DragOverlay, closestCorners, KeyboardSensor, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
+import { SortableContext, arrayMove, sortableKeyboardCoordinates } from '@dnd-kit/sortable';
 import { useStore } from '../store/useStore';
 import { getOpportunities } from '../lib/api';
 import KanbanColumn from '../components/kanban/KanbanColumn';
 import OpportunityCard from '../components/kanban/OpportunityCard';
 import { Plus } from 'lucide-react';
 
+// Estágios do Kanban
 const defaultStages = [
   { id: 'new', name: 'Novo Lead' },
   { id: 'contact', name: 'Primeiro Contato' },
@@ -58,10 +47,15 @@ export default function Kanban() {
       const overStage = over.data.current.sortable.containerId;
 
       if (activeStage !== overStage) {
-        // Atualizar o estágio da oportunidade
+        // Atualizar o estágio da oportunidade via API ou Webhook
         const opportunity = opportunities.find((opp) => opp.id === active.id);
         if (opportunity) {
           useStore.getState().moveOpportunity(active.id, overStage);
+          // Enviar Webhook ou API para atualizar a oportunidade
+          fetch(`/api/updateOpportunity/${opportunity.id}`, {
+            method: 'POST',
+            body: JSON.stringify({ newStage: overStage }),
+          });
         }
       }
     }
