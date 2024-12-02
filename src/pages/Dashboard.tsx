@@ -1,33 +1,40 @@
 import React from 'react';
 import { BarChart, Users, DollarSign, Target } from 'lucide-react';
+import { useQuery } from '@tanstack/react-query';
+import { getDashboardData } from '../lib/api'; // API para buscar os dados do Dashboard
 
 export default function Dashboard() {
+  const { data: dashboardData } = useQuery({
+    queryKey: ['dashboard'],
+    queryFn: getDashboardData,
+  });
+
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
         <DashboardCard
           title="Total de Contatos"
-          value="1,234"
+          value={dashboardData?.contactsTotal || '0'}
           icon={Users}
-          trend="+12.5%"
+          trend={dashboardData?.contactsTrend || '+0%'}
         />
         <DashboardCard
           title="Oportunidades Abertas"
-          value="45"
+          value={dashboardData?.openOpportunities || '0'}
           icon={Target}
-          trend="+5.2%"
+          trend={dashboardData?.opportunitiesTrend || '+0%'}
         />
         <DashboardCard
           title="Valor Total"
-          value="R$ 123.456"
+          value={`R$ ${dashboardData?.totalValue || '0'}`}
           icon={DollarSign}
-          trend="+8.1%"
+          trend={dashboardData?.totalValueTrend || '+0%'}
         />
         <DashboardCard
           title="Taxa de Conversão"
-          value="32%"
+          value={`${dashboardData?.conversionRate || '0'}%`}
           icon={BarChart}
-          trend="+2.3%"
+          trend={dashboardData?.conversionRateTrend || '+0%'}
         />
       </div>
     </div>
@@ -51,13 +58,9 @@ function DashboardCard({ title, value, icon: Icon, trend }: DashboardCardProps) 
           </div>
           <div className="ml-5 w-0 flex-1">
             <dl>
-              <dt className="text-sm font-medium text-gray-500 truncate">
-                {title}
-              </dt>
+              <dt className="text-sm font-medium text-gray-500 truncate">{title}</dt>
               <dd className="flex items-baseline">
-                <div className="text-2xl font-semibold text-gray-900">
-                  {value}
-                </div>
+                <div className="text-2xl font-semibold text-gray-900">{value}</div>
                 <div className="ml-2 flex items-baseline text-sm font-semibold text-green-600">
                   {trend}
                 </div>
