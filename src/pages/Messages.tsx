@@ -3,12 +3,10 @@ import { useQuery } from '@tanstack/react-query';
 import { Plus, Calendar, Clock, Tags } from 'lucide-react';
 import { useStore } from '../store/useStore';
 import MessageTemplateForm from '../components/messages/MessageTemplateForm';
-import AutomationRuleForm from '../components/messages/AutomationRuleForm';
 import { getCompany } from '../lib/api';
 
 export default function Messages() {
   const [showTemplateForm, setShowTemplateForm] = React.useState(false);
-  const [showAutomationForm, setShowAutomationForm] = React.useState(false);
   const { company } = useStore();
 
   const { data: companyData } = useQuery({
@@ -32,13 +30,7 @@ export default function Messages() {
             <Plus className="h-5 w-5 mr-2" />
             Novo Template
           </button>
-          <button
-            onClick={() => setShowAutomationForm(true)}
-            className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700"
-          >
-            <Plus className="h-5 w-5 mr-2" />
-            Nova Automação
-          </button>
+          {/* Removido o botão de "Nova Automação" */}
         </div>
       </div>
 
@@ -87,14 +79,12 @@ export default function Messages() {
         </div>
       </div>
 
-      {/* Formulários de criação */}
+      {/* Formulário de criação de template */}
       {showTemplateForm && (
         <MessageTemplateForm onClose={() => setShowTemplateForm(false)} onSuccess={() => setShowTemplateForm(false)} />
       )}
 
-      {showAutomationForm && (
-        <AutomationRuleForm onClose={() => setShowAutomationForm(false)} onSuccess={() => setShowAutomationForm(false)} />
-      )}
+      {/* Removido o formulário de automação */}
     </div>
   );
 }
