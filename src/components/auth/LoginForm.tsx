@@ -24,6 +24,7 @@ type MfaFormData = z.infer<typeof mfaSchema>;
 export default function LoginForm() {
   const [needsMfa, setNeedsMfa] = React.useState(false);
   const [email, setEmail] = React.useState('');
+  const [errorMessage, setErrorMessage] = React.useState('');  // Estado para capturar o erro
   const navigate = useNavigate();
   const setCurrentUser = useStore((state) => state.setCurrentUser);
 
@@ -61,8 +62,8 @@ export default function LoginForm() {
         alert('Código de verificação enviado para o seu e-mail!');
       }
     } catch (error) {
-      console.error('Erro ao fazer login:', error.response?.data || error.message);
-      alert('Erro ao fazer login. Verifique suas credenciais.');
+      // Exibe a mensagem de erro diretamente na interface
+      setErrorMessage(error.response?.data?.error || 'Erro ao fazer login. Verifique suas credenciais.');
     }
   };
 
@@ -80,8 +81,7 @@ export default function LoginForm() {
         navigate('/');
       }
     } catch (error) {
-      console.error('Erro na verificação MFA:', error.response?.data || error.message);
-      alert('Erro na verificação MFA. Verifique o código e tente novamente.');
+      setErrorMessage('Erro na verificação MFA. Verifique o código e tente novamente.');
     }
   };
 
@@ -142,6 +142,9 @@ export default function LoginForm() {
             Entre na sua conta
           </h2>
         </div>
+        {errorMessage && (
+          <p className="text-center text-sm text-red-600">{errorMessage}</p>  {/* Exibe o erro */}
+        )}
         <form className="mt-8 space-y-6" onSubmit={handleLoginSubmit(onLoginSubmit)}>
           <div className="rounded-md shadow-sm -space-y-px">
             <div>
@@ -183,7 +186,7 @@ export default function LoginForm() {
           <div className="flex items-center justify-between">
             <div className="text-sm">
               <a href="#" className="font-medium text-indigo-600 hover:text-indigo-500">
-                Esqueceu sua senha?
+                Esquece sua senha?
               </a>
             </div>
           </div>
