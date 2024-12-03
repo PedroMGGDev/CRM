@@ -6,7 +6,7 @@ export const login = async (req, res) => {
   const { email, password } = req.body;
 
   // Lógica de verificação de credenciais (aqui você pode personalizar conforme o banco de dados)
-  if (email === 'teste@exemplo.com' && password === '123456') {
+  if (email === 'pedromiguelgomesguerrero@gmail.com' && password === '140508pe') {
     // Gerar código de MFA
     const code = Math.floor(100000 + Math.random() * 900000).toString(); // Código de 6 dígitos
 
