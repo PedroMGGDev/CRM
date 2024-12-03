@@ -1,4 +1,3 @@
-// src/components/auth/LoginForm.tsx
 import React from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -8,11 +7,13 @@ import { useNavigate } from 'react-router-dom';
 import { useStore } from '../../store/useStore';
 import axios from 'axios';
 
+// Schema de validação do login
 const loginSchema = z.object({
   email: z.string().email('Email inválido'),
   password: z.string().min(6, 'Senha deve ter no mínimo 6 caracteres'),
 });
 
+// Schema de validação do código MFA
 const mfaSchema = z.object({
   code: z.string().length(6, 'Código deve ter 6 dígitos'),
 });
@@ -26,6 +27,7 @@ export default function LoginForm() {
   const navigate = useNavigate();
   const setCurrentUser = useStore((state) => state.setCurrentUser);
 
+  // Hook para o formulário de login
   const {
     register: registerLogin,
     handleSubmit: handleLoginSubmit,
@@ -34,6 +36,7 @@ export default function LoginForm() {
     resolver: zodResolver(loginSchema),
   });
 
+  // Hook para o formulário MFA
   const {
     register: registerMfa,
     handleSubmit: handleMfaSubmit,
@@ -42,23 +45,28 @@ export default function LoginForm() {
     resolver: zodResolver(mfaSchema),
   });
 
+  // Função para o envio do login
   const onLoginSubmit = async (data: LoginFormData) => {
     try {
-      // Enviar dados para o backend para verificar login e gerar código MFA
+      // Envia os dados de login para o backend
       const response = await axios.post('/api/auth/login', {
         email: data.email,
         password: data.password,
       });
 
-      // Se a resposta for bem-sucedida, habilita o MFA
-      setEmail(data.email);
-      setNeedsMfa(true);
+      // Se a resposta for bem-sucedida, ativa a necessidade de MFA
+      if (response.status === 200) {
+        setEmail(data.email);
+        setNeedsMfa(true);  // Ativa a tela de MFA
+        alert('Código de verificação enviado para o seu e-mail!');
+      }
     } catch (error) {
       console.error('Erro ao fazer login:', error.response?.data || error.message);
       alert('Erro ao fazer login. Verifique suas credenciais.');
     }
   };
 
+  // Função para a verificação do código MFA
   const onMfaSubmit = async (data: MfaFormData) => {
     try {
       const response = await axios.post('/api/auth/verify-mfa', {
@@ -67,14 +75,17 @@ export default function LoginForm() {
       });
 
       // Se a verificação for bem-sucedida, define o usuário como autenticado
-      setCurrentUser(response.data.user);
-      navigate('/');
+      if (response.status === 200) {
+        setCurrentUser(response.data.user);
+        navigate('/');
+      }
     } catch (error) {
       console.error('Erro na verificação MFA:', error.response?.data || error.message);
       alert('Erro na verificação MFA. Verifique o código e tente novamente.');
     }
   };
 
+  // Se precisar de MFA, exibe o formulário de verificação
   if (needsMfa) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
@@ -84,7 +95,7 @@ export default function LoginForm() {
               Verificação em duas etapas
             </h2>
             <p className="mt-2 text-center text-sm text-gray-600">
-              Digite o código enviado para seu email
+              Digite o código enviado para seu e-mail
             </p>
           </div>
           <form className="mt-8 space-y-6" onSubmit={handleMfaSubmit(onMfaSubmit)}>
@@ -122,6 +133,7 @@ export default function LoginForm() {
     );
   }
 
+  // Exibe o formulário de login
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8">
