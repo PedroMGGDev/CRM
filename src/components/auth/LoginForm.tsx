@@ -1,3 +1,4 @@
+// src/components/auth/LoginForm.tsx
 import React from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -5,7 +6,7 @@ import { z } from 'zod';
 import { Mail, Lock, KeyRound } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useStore } from '../../store/useStore';
-import api from '../../lib/api'; // Certifique-se de que o arquivo API está configurado corretamente
+import axios from 'axios';
 
 const loginSchema = z.object({
   email: z.string().email('Email inválido'),
@@ -41,38 +42,33 @@ export default function LoginForm() {
     resolver: zodResolver(mfaSchema),
   });
 
-  // Submeter o formulário de login
   const onLoginSubmit = async (data: LoginFormData) => {
     try {
-      const response = await api.post('/auth/login', {
+      // Enviar dados para o backend para verificar login e gerar código MFA
+      const response = await axios.post('/api/auth/login', {
         email: data.email,
         password: data.password,
       });
 
-      // Salvar o e-mail e habilitar o segundo passo de MFA
+      // Se a resposta for bem-sucedida, habilita o MFA
       setEmail(data.email);
       setNeedsMfa(true);
-
-      console.log('Código enviado ao e-mail com sucesso!');
     } catch (error) {
       console.error('Erro ao fazer login:', error.response?.data || error.message);
       alert('Erro ao fazer login. Verifique suas credenciais.');
     }
   };
 
-  // Submeter o formulário de verificação MFA
   const onMfaSubmit = async (data: MfaFormData) => {
     try {
-      const response = await api.post('/auth/verify-mfa', {
+      const response = await axios.post('/api/auth/verify-mfa', {
         email: email,
         code: data.code,
       });
 
-      // Salvar o usuário autenticado no estado global
+      // Se a verificação for bem-sucedida, define o usuário como autenticado
       setCurrentUser(response.data.user);
       navigate('/');
-
-      console.log('Login realizado com sucesso!');
     } catch (error) {
       console.error('Erro na verificação MFA:', error.response?.data || error.message);
       alert('Erro na verificação MFA. Verifique o código e tente novamente.');
