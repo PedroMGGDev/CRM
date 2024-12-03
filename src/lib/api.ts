@@ -80,4 +80,40 @@ export const scheduleMessage = (companyId: string, contactId: string, message: {
 }) =>
   api.post(`/companies/${companyId}/contacts/${contactId}/schedule-message`, message);
 
+// Dashboard
+export const getDashboardData = async (companyId: string) => {
+  try {
+    // Reutilizando APIs existentes
+    const [contactsResponse, opportunitiesResponse] = await Promise.all([
+      getContacts(companyId), // Retorna a lista de contatos
+      getOpportunities(companyId), // Retorna a lista de oportunidades
+    ]);
+
+    const contacts = contactsResponse.data;
+    const opportunities = opportunitiesResponse.data;
+
+    // Cálculos agregados
+    const totalValue = opportunities.reduce((sum, opp) => sum + (opp.value || 0), 0);
+    const conversionRate =
+      opportunities.length > 0
+        ? ((contacts.length / opportunities.length) * 100).toFixed(2)
+        : '0';
+
+    // Retorna os dados no formato esperado
+    return {
+      contactsTotal: contacts.length,
+      contactsTrend: '+10%', // Exemplo fictício; ajuste conforme necessário
+      openOpportunities: opportunities.length,
+      opportunitiesTrend: '+5%', // Exemplo fictício
+      totalValue,
+      totalValueTrend: '+8%', // Exemplo fictício
+      conversionRate,
+      conversionRateTrend: '+2%', // Exemplo fictício
+    };
+  } catch (error) {
+    console.error('Erro ao buscar dados do Dashboard:', error);
+    throw error;
+  }
+};
+
 export default api;
