@@ -5,6 +5,7 @@ import { z } from 'zod';
 import { Mail, Lock, KeyRound } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useStore } from '../../store/useStore';
+import api from '../../lib/api'; // Certifique-se de que o arquivo API está configurado corretamente
 
 const loginSchema = z.object({
   email: z.string().email('Email inválido'),
@@ -40,29 +41,41 @@ export default function LoginForm() {
     resolver: zodResolver(mfaSchema),
   });
 
+  // Submeter o formulário de login
   const onLoginSubmit = async (data: LoginFormData) => {
     try {
-      // Simular chamada à API
+      const response = await api.post('/auth/login', {
+        email: data.email,
+        password: data.password,
+      });
+
+      // Salvar o e-mail e habilitar o segundo passo de MFA
       setEmail(data.email);
       setNeedsMfa(true);
+
+      console.log('Código enviado ao e-mail com sucesso!');
     } catch (error) {
-      console.error('Erro ao fazer login:', error);
+      console.error('Erro ao fazer login:', error.response?.data || error.message);
+      alert('Erro ao fazer login. Verifique suas credenciais.');
     }
   };
 
+  // Submeter o formulário de verificação MFA
   const onMfaSubmit = async (data: MfaFormData) => {
     try {
-      // Simular verificação MFA
-      setCurrentUser({
-        id: '1',
-        name: 'Usuário Teste',
+      const response = await api.post('/auth/verify-mfa', {
         email: email,
-        role: 'admin',
-        companyId: '1',
+        code: data.code,
       });
+
+      // Salvar o usuário autenticado no estado global
+      setCurrentUser(response.data.user);
       navigate('/');
+
+      console.log('Login realizado com sucesso!');
     } catch (error) {
-      console.error('Erro na verificação MFA:', error);
+      console.error('Erro na verificação MFA:', error.response?.data || error.message);
+      alert('Erro na verificação MFA. Verifique o código e tente novamente.');
     }
   };
 
