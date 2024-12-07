@@ -13,10 +13,11 @@ function PrivateRoute({ children }: { children: React.ReactNode }) {
 }
 
 function App() {
+  const currentUser = useStore((state) => state.currentUser);
+
   return (
     <Router>
       <Routes>
-        <Route path="/login" element={<LoginForm />} />
         <Route
           path="/"
           element={
@@ -26,14 +27,18 @@ function App() {
           }
         >
           <Route index element={<Dashboard />} />
+          <Route path="contacts" element={<Contacts />} />
+          <Route path="companies" element={<Companies />} />
           <Route path="kanban" element={<Kanban />} />
           <Route path="messages" element={<Messages />} />
-          {/* Removido a rota de "settings" já que o arquivo não existe */}
-          {/* <Route path="settings" element={<Settings />} /> */}
+          <Route path="settings" element={<AdminRoute><Settings /></AdminRoute>} />
         </Route>
+        {/* Caso o usuário não esteja logado, ele será redirecionado para o Dashboard */}
+        <Route path="*" element={<Navigate to="/" />} />
       </Routes>
     </Router>
   );
 }
+
 
 export default App;
