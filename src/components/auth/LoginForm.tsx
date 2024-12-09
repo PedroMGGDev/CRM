@@ -143,8 +143,9 @@ export default function LoginForm() {
           </h2>
         </div>
         {errorMessage && (
-          <p className="text-center text-sm text-red-600">{errorMessage}</p>  {/* Exibe o erro */}
-        )}
+  <p className="text-center text-sm text-red-600">{errorMessage}</p>
+)}
+
         <form className="mt-8 space-y-6" onSubmit={handleLoginSubmit(onLoginSubmit)}>
           <div className="rounded-md shadow-sm -space-y-px">
             <div>
