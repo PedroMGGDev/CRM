@@ -3,11 +3,30 @@ import { BarChart, Users, DollarSign, Target } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { getDashboardData } from '../lib/api'; // API para buscar os dados do Dashboard
 
-export default function Dashboard() {
-  const { data: dashboardData } = useQuery({
-    queryKey: ['dashboard'],
-    queryFn: getDashboardData,
+interface DashboardProps {
+  companyId: string; // Adicionando o parâmetro companyId
+}
+
+export default function Dashboard({ companyId }: DashboardProps) {
+  const { data: dashboardData, error, isLoading } = useQuery({
+    queryKey: ['dashboard', companyId], // Incluindo companyId na chave da query
+    queryFn: () => getDashboardData(companyId), // Passando companyId para a API
   });
+
+  if (isLoading) {
+    return <div>Carregando...</div>; // Exibindo loading enquanto os dados estão sendo carregados
+  }
+
+  if (error instanceof Error) {
+    return <div>Erro ao carregar dados: {error.message}</div>; // Exibindo mensagem de erro caso ocorra algum problema
+  }
+
+  // Calcular tendência com base nos dados reais
+  const calculateTrend = (current: number, previous: number) => {
+    if (previous === 0) return '+0%'; // Se não houver dado anterior, não há tendência
+    const trend = ((current - previous) / previous) * 100;
+    return `${trend.toFixed(2)}%`;
+  };
 
   return (
     <div className="space-y-6">
@@ -16,25 +35,28 @@ export default function Dashboard() {
           title="Total de Contatos"
           value={dashboardData?.contactsTotal || '0'}
           icon={Users}
-          trend={dashboardData?.contactsTrend || '+0%'}
+          trend={calculateTrend(dashboardData?.contactsTotal, dashboardData?.previousContactsTotal)}
         />
         <DashboardCard
           title="Oportunidades Abertas"
           value={dashboardData?.openOpportunities || '0'}
           icon={Target}
-          trend={dashboardData?.opportunitiesTrend || '+0%'}
+          trend={calculateTrend(dashboardData?.openOpportunities, dashboardData?.previousOpenOpportunities)}
         />
         <DashboardCard
           title="Valor Total"
           value={`R$ ${dashboardData?.totalValue || '0'}`}
           icon={DollarSign}
-          trend={dashboardData?.totalValueTrend || '+0%'}
+          trend={calculateTrend(dashboardData?.totalValue, dashboardData?.previousTotalValue)}
         />
         <DashboardCard
           title="Taxa de Conversão"
           value={`${dashboardData?.conversionRate || '0'}%`}
           icon={BarChart}
-          trend={dashboardData?.conversionRateTrend || '+0%'}
+          trend={calculateTrend(
+            parseFloat(dashboardData?.conversionRate || '0'),
+            parseFloat(dashboardData?.previousConversionRate || '0')
+          )}
         />
       </div>
     </div>
