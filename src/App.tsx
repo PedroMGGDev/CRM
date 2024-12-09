@@ -1,36 +1,39 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { useStore } from './store/useStore';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Layout from './components/Layout';
-import LoginForm from './components/auth/LoginForm';
 import Dashboard from './pages/Dashboard';
 import Kanban from './pages/Kanban';
 import Messages from './pages/Messages';
-
-function PrivateRoute({ children }: { children: React.ReactNode }) {
-  const currentUser = useStore((state) => state.currentUser);
-  return currentUser ? <>{children}</> : <Navigate to="/login" />;
-}
 
 function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/login" element={<LoginForm />} />
+        {/* Removeu a verificação de autenticação */}
         <Route
           path="/"
           element={
-            <PrivateRoute>
-              <Layout />
-            </PrivateRoute>
+            <Layout>
+              <Dashboard />
+            </Layout>
           }
-        >
-          <Route index element={<Dashboard />} />
-          <Route path="kanban" element={<Kanban />} />
-          <Route path="messages" element={<Messages />} />
-          {/* Removido a rota de "settings" já que o arquivo não existe */}
-          {/* <Route path="settings" element={<Settings />} /> */}
-        </Route>
+        />
+        <Route
+          path="/kanban"
+          element={
+            <Layout>
+              <Kanban />
+            </Layout>
+          }
+        />
+        <Route
+          path="/messages"
+          element={
+            <Layout>
+              <Messages />
+            </Layout>
+          }
+        />
       </Routes>
     </Router>
   );
